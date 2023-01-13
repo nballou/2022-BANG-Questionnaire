@@ -3,6 +3,8 @@ library(psych)
 library(corrplot)
 library(EFAtools)
 library(lavaan)
+library(semTools)
+library(dynamic) # for dynamix fit index cutoffs
 
 # ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 # ---------- Descriptives -----------
@@ -47,7 +49,7 @@ EFAtools::BARTLETT(df[,12:103])
 
 # Explore how many factors to extract
 fa.parallel(df[,12:103], fm = "minres", nfactors = 6)
-# N_FACTORS(df[,12:103])
+# N_FACTORS(df[,12:103]) # compares many factor extraction methods, but very slow
 
 # Fit model
 efa1 <- fa(df[,12:103], nfactors = 6, fm = "ml", rotate = "oblimin")
@@ -85,19 +87,30 @@ text(load,labels=names(df[,12:103]),cex=.7) # add variable names
 # --------- EFA 2 -----------
 # ~~~~~~~~~~~~~~~~~~~~~~~~~~~
 
-# Second EFA, after item pruning (this seems like questionable practice, but is what they did in the PXI)
-# Selected items have loadings of > .5 on intended factor, and < .3 on all others
-retained <- c("as05", "as06", "as01", "as09",
+# Second EFA, after item pruning (I'm not sure this is best practice, but it's what they did in the PXI validation)
+# Selected items have loadings of > .5 on intended factor, and < .3 on all others; selection among high-performing items 
+# was made based on theoretical coherence/face validity and coverage 
+# (see https://docs.google.com/spreadsheets/d/1phM2KW03xJ6ThUV5kXdIuSLhdBq9MjGB_9t_jwb43nc/edit#gid=483999237)
+
+best_performers <- c("as05", "as06", "as01", "as09",
               "af04", "af02", "af16", "af01",
               "cs06", "cs03", "cs02", "cs12",
               "cf01", "cf04", "cf05", "cf14",
               "rs10", "rs14", "rs02", "rs13",
               "rf07", "rf08", "rf05", "rf02")
-dfReduced <- df %>% 
-  select(all_of(retained))
+
+# the list of worst performers is developed iteratively over 4 rounds; in each case, an EFA model is fit, the worst-performing items 
+# are identified and dropped, and a new model with fewer items is fit until all remaining items are high-performing. 
+worst_performers <- c("as14", "rs11","as15", "cs07", "cf13", "cs13", "cs08", "rf15", "rf14", "cf10", "rf10", "as08", "as07", 
+                      "as10", "af09", "af12", "af07", "cf15", "rf06", "as03", "af03", "as13", "rf13", "rf12", "rs12", "rs06", "cs14", "cs09",
+                      "as02", "cs05", "af13", "rf11", "rf03", "cs10", "af06", "af15", "rs03", "rs07")
+
+dfReduced <- df[,12:103] %>% 
+  # select(all_of(best_performers)) %>%
+  select(-all_of(worst_performers))
 
 itemWordingReduced <- itemWording %>%
-  filter(label %in% retained)
+  filter(label %in% colnames(dfReduced))
 
 efa2 <- fa(dfReduced, nfactors = 6, fm = "ml", rotate = "oblimin")
 summary(efa2)
@@ -112,15 +125,29 @@ efa2tab$f_table
 # --------- CFA results -----------
 # ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 
+# We observe high correlations between first-order factors (particularly AS ~~ CS and CS ~~ RS); as a result, 
+# we add second-order need satisfaction and need frustration factors, 
 cfaMod <- '
   AS =~ as05 + as06 + as01 + as09
-  AF =~ af04 + af02 + af16 + af01
-  CS =~ cs06 + cs03 + cs02 + cs12
+  AF =~ af04 + af02 + af10 + af05
+  CS =~ cs06 + cs15 + cs02 + cs12
   CF =~ cf01 + cf04 + cf05 + cf14
-  RS =~ rs10 + rs14 + rs02 + rs13
+  RS =~ rs10 + rs05 + rs02 + rs13
   RF =~ rf07 + rf08 + rf05 + rf02
+
+  NS =~ AS + CS + RS
+  NF =~ AF + CF + RF
 '
 
-cfa1 <- cfa(cfaMod, df[,12:103])
-summary(cfa1)
+cfa1 <- cfa(cfaMod, df)
+summary(cfa1, fit.measures = TRUE, standardized = TRUE)
 fitMeasures(cfa1)
+modificationindices(cfa1)
+compRelSEM(cfa1) # check factor reliabilities
+
+# Get dynamic fit index cutoffs, rather than relying on standards (see McNeish & Wolf 2021, https://psyarxiv.com/v8yru/)
+# cfaHB returns a table with cutoffs that correctly accept ≥95% of true models and reject ≥95% of misspecified models, given 
+# a certain degree of misspecification. Misspecification takes the form of additional cross-loadings present in the true model but 
+# omitted from the model---in this case, 1--5 additional cross-loadings. The magnitude column indicates the strength of the omitted
+# cross-loading in the population model.
+cfaHB(cfa1)
