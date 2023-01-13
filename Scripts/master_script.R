@@ -87,12 +87,12 @@ text(load,labels=names(df[,12:103]),cex=.7) # add variable names
 
 # Second EFA, after item pruning (this seems like questionable practice, but is what they did in the PXI)
 # Selected items have loadings of > .5 on intended factor, and < .3 on all others
-retained <- c("rs05", "rs10", "rs09", "rs14", "rs15", "rs13", "rs02", "rs08", "rs07", "rs04", 
-              "cf12", "cf01", "cf09", "cf05", "cf04", "cf08", "cf03", 
-              "as05", "as06", "as01", "as04", "as07", "as09",
-              "cs06", "cs02", "cs03",
-              "af02", "af10", "af04", "af05",
-              "rf11", "rf13", "rf07", "rf08", "rf09", "rf02")
+retained <- c("as05", "as06", "as01", "as09",
+              "af04", "af02", "af16", "af01",
+              "cs06", "cs03", "cs02", "cs12",
+              "cf01", "cf04", "cf05", "cf14",
+              "rs10", "rs14", "rs02", "rs13",
+              "rf07", "rf08", "rf05", "rf02")
 dfReduced <- df %>% 
   select(all_of(retained))
 
@@ -113,12 +113,12 @@ efa2tab$f_table
 # ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 
 cfaMod <- '
-  AS =~ as01 + as02 + as03 + as04 + as05 + as06 + as07 + as08 + as09 + as10 + as11 + as12 + as13 + as14 + as15
-  AF =~ af01 + af02 + af03 + af04 + af05 + af06 + af07 + af08 + af09 + af10 + af11 + af12 + af13 + af14 + af15 + af16
-  CS =~ cs01 + cs02 + cs03 + cs04 + cs05 + cs06 + cs07 + cs08 + cs09 + cs10 + cs11 + cs12 + cs13 + cs14 + cs15
-  CF =~ cf01 + cf02 + cf03 + cf04 + cf05 + cf06 + cf07 + cf08 + cf09 + cf10 + cf11 + cf12 + cf13 + cf14 + cf15
-  RS =~ rs01 + rs02 + rs03 + rs04 + rs05 + rs06 + rs07 + rs08 + rs09 + rs10 + rs11 + rs12 + rs13 + rs14 + rs15
-  RF =~ rf01 + rf02 + rf03 + rf04 + rf05 + rf06 + rf07 + rf08 + rf09 + rf10 + rf11 + rf12 + rf13 + rf14 + rf15
+  AS =~ as05 + as06 + as01 + as09
+  AF =~ af04 + af02 + af16 + af01
+  CS =~ cs06 + cs03 + cs02 + cs12
+  CF =~ cf01 + cf04 + cf05 + cf14
+  RS =~ rs10 + rs14 + rs02 + rs13
+  RF =~ rf07 + rf08 + rf05 + rf02
 '
 
 cfa1 <- cfa(cfaMod, df[,12:103])
