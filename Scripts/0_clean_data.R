@@ -61,8 +61,7 @@ clean_df_2 <- raw_df_2 %>%
   
 df <- bind_rows(clean_df, clean_df_2) %>%
   # exclude automatically- and manually-identified potential careless responders
-  filter(!possibleCareless) %>%
   unite("recallText",`recall-pos-text`,`recall-neg-text`, na.rm = TRUE) %>%
   relocate(c(cf08_dup, as07_dup, rs10_dup, cf01_dup), .after = last_col())
 
-write_csv(df, "CleanData/cleanData_230131.csv")
+write_csv(df, "CleanData/EFAdata.csv")

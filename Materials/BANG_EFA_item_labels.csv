@@ -1,93 +1,19 @@
-label,item
-as01,I could play the game in the way I wanted.
-as02,I felt a sense of freedom when playing the game.
-as03,I could pursue activities in the game that really interest me.
-as04,I had the agency to decide how I wanted to play.
-as05,I could direct my own play experience.
-as06,I could make choices regarding how to play the game.
-as07,I could develop or apply different strategies when I wanted.
-as08,I could choose different strategies or actions to use in the game.
-as09,I was able to choose how I explored the game environment.
-as10,The choices in the game felt like meaningful ones.
-as11,Playing this game and doing things in it felt like something I wanted to do.
-as12,I felt the things I do in this game flow from me.
-as13,I stand behind the game and the things players do in it.
-as14,Playing the game felt like something that is authentically 'me'.
-as15,Playing the game provided experiences I really value.
-af01,I felt forced to take certain actions in the game.
-af02,"At times, I found myself playing the game despite not really wanting to."
-af03,The game didn’t inspire any sense of mission or purpose.
-af04,I often found myself wishing I could do something else within the game.
-af05,A lot of my in-game activities felt like things I had to do.
-af06,I felt that I could not play the game the way I wanted.
-af07,I felt that I was constrained in how I could play the game.
-af08,I felt like I was being pushed through the game in a predetermined direction.
-af09,I felt pressured to progress through the game at a certain speed.
-af10,I felt like I had to keep playing the game even though I did not want to.
-af11,The game often required too much effort for certain goals.
-af12,"Engaging in the game, I feel a sense of being controlled."
-af13,I felt an inner conflict over engaging in the game.
-af14,I felt an inner conflict over the things I did in the game.
-af15,"It feels like the things I did in the game, I did out of external pressure."
-af16,Many actions in the game were routine and boring.
-cs01,I felt a sense of growth when playing the game.
-cs02,I felt that I made progress while playing.
-cs03,I felt a sense of mastery while playing.
-cs04,I felt I could exercise my capabilities while playing.
-cs05,I felt my actions had meaningful impact within the game.
-cs06,I felt a sense of achievement while playing.
-cs07,I felt capable while playing the game.
-cs08,I felt that I was able to achieve what I wanted in the game.
-cs09,I felt that my actions in the game were effective.
-cs10,I was good at playing the game.
-cs11,I was able to fully use my abilities.
-cs12,I felt my ability to play this game was growing.
-cs13,I felt I was getting better at playing the game.
-cs14,I was improving at the game.
-cs15,The game let me stretch my abilities.
-cf01,I often felt that I lacked the skills necessary for the game.
-cf02,I felt that the game put me in impossible situations.
-cf03,I felt incompetent while playing the game.
-cf04,I felt like I wasn't ever going to get better at the game.
-cf05,I kept failing to accomplish tasks I wanted to while playing.
-cf06,I felt that some situations in the game were unfair.
-cf07,I felt helpless when playing the game.
-cf08,I had doubts about being able to do things well in the game.
-cf09,I felt disappointed with my performance in the game.
-cf10,I was not able to use my skills how I wanted.
-cf11,I did not understand how to play the game.
-cf12,I felt like the game was too difficult for me.
-cf13,"Playing this game, I often felt stuck."
-cf14,I felt its too difficult to make progress in the game.
-cf15,My actions in the game had little or no impact.
-cf16,There were too many obstacles in the game.
-rs01,I could put myself in other characters' shoes.
-rs02,I felt a sense of connection with other players and/or characters.
-rs03,I felt that other players and/or characters in the game cared about me.
-rs04,I cared about what happened to other players and/or characters.
-rs05,I felt I formed relationships with other players and/or characters.
-rs06,"While playing, I noticed players and/or characters with traits I want to emulate."
-rs07,"When playing, I felt understood by others."
-rs08,I consider the relationships I developed in the game meaningful.
-rs09,I consider the relationships I formed in the game fulfilling.
-rs10,I consider the relationships I developed in the game valuable.
-rs11,I felt that I belong.
-rs12,I felt like part of a community.
-rs13,"Engaging with the game, I felt a connection to others, virtual or real."
-rs14,"Engaging with the game, I felt I was bonding with others."
-rs15,I felt satisfying relationships in engaging with this game.
-rf01,I felt distance between myself and other players in the game.
-rf02,I found the community in and around the game off-putting.
-rf03,I felt disconnected from the game's characters and world.
-rf04,I felt alienated from others.
-rf05,The community or virtual world in the game made me feel unwelcome.
-rf06,I routinely felt uninterested in what happened to other players or characters in the game.
-rf07,I experienced a sense of toxicity in the game.
-rf08,Others in the game were unfriendly towards me.
-rf09,I disliked some of the other players.
-rf10,I felt alone while playing.
-rf11,I felt left out from a group while playing.
-rf12,It was a difficult game to connect with others.
-rf13,"Engaging with the game, I felt excluded."
-rf14,"Engaging with the game, I felt disconnected from others."
-rf15,"Engaging with the game, I felt rejected."
+bangqLabel,label,item
+bang_1,as06,I could make choices regarding how to play the game.
+bang_2,as01,I could play the game in the way I wanted.
+bang_3,as05,I could direct my own play experience.
+bang_4,af01,I felt forced to take certain actions in the game.
+bang_5,af16,Many actions in the game were boring.
+bang_6,af04,I often found myself wishing I could do something else within the game.
+bang_7,cs13,I felt I was getting better at playing the game.
+bang_8,cs02,I felt that I made progress while playing.
+bang_9,cs06,I felt a sense of achievement while playing.
+bang_10,cf01,I often felt that I lacked the skills necessary for the game.
+bang_11,cf05,I kept failing to accomplish tasks I wanted to while playing.
+bang_12,cf09,I felt disappointed with my performance in the game.
+bang_13,rs05,I felt I formed relationships with other players and/or characters.
+bang_14,rs13,"Engaging with the game, I felt a connection to others, virtual or real."
+bang_15,rs03,I felt that other players and/or characters in the game cared about me.
+bang_16,rf07,I experienced a sense of toxicity in the game.
+bang_17,rf05,The community or virtual world in the game made me feel unwelcome.
+bang_18,rf08,Others in the game were unfriendly towards me.
