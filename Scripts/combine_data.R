@@ -1,6 +1,6 @@
 library(tidyverse)
 
-efa <- read_csv("CleanData/EFAdata.csv") %>%
+efa <- read_csv("RawData/EFAdata.csv") %>%
   mutate(study = "study1efa") %>%
   select(study, age, gender, condition, recallText, possibleCareless, af01:rs15) %>%
   mutate(bang_1 = as01,
@@ -29,7 +29,7 @@ efa <- read_csv("CleanData/EFAdata.csv") %>%
          bang_24 = rf02) %>%
   mutate(condition = ifelse(is.na(condition), "any experience", condition))
 
-gen <- read_csv("CleanData/dataFinalNoImputation.csv") %>%
+gen <- read_csv("RawData/XboxData.csv") %>%
   # select(randomID, possibleCareless, wave, BANG_1:BANG_24) %>%
   mutate(randomID = as.character(randomID),
          possibleCareless = isCareless,
@@ -62,7 +62,7 @@ gen <- read_csv("CleanData/dataFinalNoImputation.csv") %>%
   filter(!is.na(bang_1)) %>%
   select(study, randomID, possibleCareless, wave, age, gender, bang_1:bang_24, as01:rf02, playtimeNext2Weeks)
 
-piped <- read_csv("CleanData/CFAdata.csv")[-(1:2),] %>% 
+piped <- read_csv("RawData/CFAdata.csv")[-(1:2),] %>% 
   mutate(across(starts_with("bang"), ~recode(., 
                                              "1 - Strongly disagree" = 1,
                                              "2" = 2,
@@ -119,7 +119,7 @@ piped <- read_csv("CleanData/CFAdata.csv")[-(1:2),] %>%
                                                "4" = 4,
                                                "5 - completely true" = 5))) %>%
   mutate(study = "study3piped") %>%
-  left_join(read_csv("CleanData/prolificDemographics.csv"),
+  left_join(read_csv("RawData/prolificDemographics.csv"),
             by = c("PROLIFIC_PID" = "Participant id")) %>%
   rename(age = Age, 
          gender = Sex,
@@ -128,7 +128,7 @@ piped <- read_csv("CleanData/CFAdata.csv")[-(1:2),] %>%
   select(study, age, game, gender, recallText, possibleCareless, as01:rf02, umi_1:bpnsfs_24, -pxi_7)
 
 
-xboxPiped <- read_csv("CleanData/XboxDataPiped.csv")[-(1:2),] %>%
+xboxPiped <- read_csv("RawData/XboxDataPiped.csv")[-(1:2),] %>%
   mutate(possibleCareless = ifelse(as.integer(`Duration (in seconds)`) < 400, 
                                    TRUE,
                                    FALSE)) %>%
@@ -173,7 +173,7 @@ xboxPiped <- read_csv("CleanData/XboxDataPiped.csv")[-(1:2),] %>%
          af15 = bang_28) %>%
   select(-starts_with("bang_")) %>%
   mutate(study = "study3piped") %>%
-  left_join(read_csv("CleanData/XboxDemographics.csv") %>% select(randomID, age, gender),
+  left_join(read_csv("RawData/XboxDemographics.csv") %>% select(randomID, age, gender),
             by = "randomID") %>%
   mutate(age = as.integer(age))
 
@@ -190,5 +190,5 @@ dfc <- bind_rows(efa, gen, piped, xboxPiped) %>%
   )) %>%
   select(-starts_with("bang"))
 
-write_csv(dfc, "CleanData/combinedData.csv")
+write_csv(dfc, "RawData/combinedData.csv")
 
