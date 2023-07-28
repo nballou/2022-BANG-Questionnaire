@@ -7,6 +7,9 @@ library(semTools)
 library(dynamic) # for dynamic fit index cutoffs
 library(webshot2) # for saving gt tables
 library(ggthemes)
+library(gt)
+library(bmlm) # for within-person centering
+library(MuMIn)
 
 # ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 # Load data ####
@@ -72,8 +75,8 @@ source("Scripts/helper_functions.R")
 
 # extra csv file with the wording for all items 
 itemWording <- read_csv("Materials/BANG_EFA_item_labels.csv") %>%
-  mutate(wording = paste0(label, ": ", item)) %>%
-  mutate(bangqWording = paste0(label, " (", bangqLabel, "): ", item))
+  mutate(wording = paste0(efa_label, ": ", item)) %>%
+  mutate(BANGS_wording = paste0(efa_label, " (", bangs_label, "): ", item))
 
 # ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 # Specify Models ####
@@ -206,7 +209,7 @@ summary(efa1)
 # Red rows are those where loadings on the primary and secondary factors are within .10 of each other
 efa1tab <- fa_table(efa1)
 efa1tab[["ind_table"]][["_data"]][["Indicator"]] <- itemWording$wording[match(efa1tab[["ind_table"]][["_data"]][["Indicator"]],
-                                                                              itemWording$label)]
+                                                                              itemWording$efa_label)]
 efa1tab$ind_table
 efa1tab$f_table
 
@@ -224,21 +227,24 @@ text(load,labels=names(dfEFA %>% select(af01:rs15)),cex=.7) # add variable names
 # the list of worst performers is developed iteratively over 6 rounds; in each case, an EFA model is fit, the worst-performing items 
 # are identified and dropped, and a new model with fewer items is fit until all remaining items are high-performing. 
 worst_performers <- c(
+  # items already dropped after first subsample
+  # "rs11", "rf15","cf10", "rf10", "af12", "cs15","rf13","rf12","rs06","rf03","rf11"
+  # "as03", "rs07", "as02","as12","cf11"
   # Round 1
-  "as14", "rs11","as15", "cs08", "rf15", "rf14", "cf10", "rf10", "as10", "af12", "af07", "cf15", "rf06", "cs15", "af03", "as13", "rf13", "rf12"
+  "as14", "as15", "cs08", "rf14", "as10",  "af07", "cf15", "rf06",  "af03", "as13"
   # Round 2
-  ,"rs12","rs06","cs14","cs13","rf03","af13","rf11"
+  ,"rs12","cs14","cs13","af13"
   # Round 3 
-  ,"rs03","cs10","cf13","cs07","as08","as07","cs09","as03"
+  ,"rs03","cs10","cf13","cs07","as08","as07","cs09"
   # Round 4
-  ,"rs07","af06","as02","cs05"
+  ,"af06","cs05"
   # Round 5
-  ,"as11","as12","af15","af16","af11","cf06"
+  ,"as11","af15","af16","af11","cf06"
   # Round 6
-  ,"rf04","cf11","af08","af14","af01","af09"
+  ,"rf04","af08","af14","af01","af09"
 )
 
-dfReduced <- df %>%
+dfReduced <- dfEFA %>%
   select(af01:rs15) %>%
   # select(all_of(best_performers)) %>%
   select(-all_of(worst_performers))
@@ -249,7 +255,7 @@ summary(efa1reduced)
 
 efa1reducedTab <- fa_table(efa1reduced)
 efa1reducedTab[["ind_table"]][["_data"]][["Indicator"]] <- itemWording$wording[match(efa1reducedTab[["ind_table"]][["_data"]][["Indicator"]], 
-                                                                                     itemWording$label)]
+                                                                                     itemWording$efa_label)]
 efa1reducedTab$ind_table
 efa1reducedTab$f_table
 
@@ -474,6 +480,25 @@ summary(lm(mean_im_umi ~ mean_as + mean_af + mean_cs + mean_cf + mean_rs + mean_
 summary(lm(mean_im_umi ~ mean_as_bpnsfs + mean_af_bpnsfs + mean_cs_bpnsfs + mean_cf_bpnsfs + 
              mean_rs_bpnsfs + mean_rf_bpnsfs, data = dfPiped))
 
+
+dfPlaytime <- dfGEN %>%
+  bmlm::isolate(by = "randomID", 
+                value = c("mean_as","mean_as_bpnsfs",
+                          "mean_af","mean_af_bpnsfs",
+                          "mean_cs","mean_cs_bpnsfs",
+                          "mean_cf","mean_cf_bpnsfs",
+                          "mean_rs","mean_rs_bpnsfs",
+                          "mean_rf","mean_rf_bpnsfs",
+                          "playtimePrevWeek","playtimePrev2Weeks"),
+                which = "both") %>%
+  # mutate(across(starts_with("mean"), ~rank(.))) %>%
+  select(randomID, age, gender, starts_with(c("mean","playtime")))
+
 # Predictive validity of actual playtime
-summary(lmerTest::lmer(rank(playtimePrev2Weeks) ~ rank(needSatGames_centered) + rank(needFrusGames_centered) + (1|randomID),
-                       data = dflFinal))
+modPlaytime <- glmmTMB::glmmTMB(playtimePrev2Weeks ~ mean_as_cw + mean_af_cw + mean_cs_cw + mean_cf_cw + mean_rs_cw + mean_rf_cw +
+                                  mean_as_cb + mean_af_cb + mean_cs_cb + mean_cf_cb + mean_rs_cb + mean_rf_cb + (1|randomID),
+                                data = dfPlaytime,
+                                family = tweedie())
+
+summary(modPlaytime)
+r.squaredGLMM(modPlaytime)

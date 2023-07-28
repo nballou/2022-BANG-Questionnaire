@@ -30,7 +30,6 @@ efa <- read_csv("RawData/EFAdata.csv") %>%
   mutate(condition = ifelse(is.na(condition), "any experience", condition))
 
 gen <- read_csv("RawData/XboxData.csv") %>%
-  # select(randomID, possibleCareless, wave, BANG_1:BANG_24) %>%
   mutate(randomID = as.character(randomID),
          possibleCareless = isCareless,
          study = "study2xbox") %>%
@@ -58,9 +57,11 @@ gen <- read_csv("RawData/XboxData.csv") %>%
          rf05 = bang_22,
          rf08 = bang_23,
          rf02 = bang_24) %>%
-  mutate(study = "study2xbox") %>%
   filter(!is.na(bang_1)) %>%
-  select(study, randomID, possibleCareless, wave, age, gender, bang_1:bang_24, as01:rf02, playtimeNext2Weeks)
+  select(study, randomID, possibleCareless, wave, age, gender, bang_1:bang_24, as01:rf02, 
+         playtimePrevWeek, playtimePrev2Weeks, playtimeNextWeek, playtimeNext2Weeks) %>%
+  arrange(randomID, wave)
+
 
 piped <- read_csv("RawData/CFAdata.csv")[-(1:2),] %>% 
   mutate(across(starts_with("bang"), ~recode(., 
@@ -190,5 +191,5 @@ dfc <- bind_rows(efa, gen, piped, xboxPiped) %>%
   )) %>%
   select(-starts_with("bang"))
 
-write_csv(dfc, "RawData/combinedData.csv")
+write_csv(dfc, "CleanData/combinedData.csv")
 
