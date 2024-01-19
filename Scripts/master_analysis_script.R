@@ -120,15 +120,15 @@ bangqModBifactor <- '
 '
 
 bangqModHierarchical <- '
-  NS =~ bang_1 + bang_2 + bang_3 + bang_7 + bang_8 + bang_9 + bang_13 + bang_14 + bang_15
-  NF =~ bang_4 + bang_5 + bang_6 + bang_10 + bang_11 + bang_12 + bang_16 + bang_17 + bang_18 
-
   AS =~ bang_1 + bang_2 + bang_3
   AF =~ bang_4 + bang_5 + bang_6 
   CS =~ bang_7 + bang_8 + bang_9
   CF =~ bang_10 + bang_11 + bang_12
   RS =~ bang_13 + bang_14 + bang_15
   RF =~ bang_16 + bang_17 + bang_18
+
+  NS =~ AS + CS + RS
+  NF =~ AF + CF + RF
 
   NS ~~ 0*AS
   NS ~~ 0*AF
@@ -180,6 +180,15 @@ dfEFA %>%
   geom_histogram(binwidth = 1) + 
   theme_minimal() +
   facet_wrap(~name)
+
+# popular games
+t <- dfEFA %>%
+  select(game) %>%
+  group_by(game) %>%
+  summarize(mentions = n()) %>%
+  arrange(desc(mentions)) %>%
+  filter(!is.na(game))
+  
 
 # ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 ## Sampling adequacy #####
@@ -449,12 +458,12 @@ corrplot(cor(df %>%
                filter(!possibleCareless) %>%
                select(starts_with("mean")) %>%
                rename(
-                 "Auto Sat (BANGQ)" = mean_as,
-                 "Auto Frus (BANGQ)" = mean_af,
-                 "Comp Sat (BANGQ)" = mean_cs,
-                 "Comp Frus (BANGQ)" = mean_cf,
-                 "Relat Sat (BANGQ)" = mean_rs,
-                 "Relat Frus (BANGQ)" = mean_rf,
+                 "Auto Sat (BANGS)" = mean_as,
+                 "Auto Frus (BANGS)" = mean_af,
+                 "Comp Sat (BANGS)" = mean_cs,
+                 "Comp Frus (BANGS)" = mean_cf,
+                 "Relat Sat (BANGS)" = mean_rs,
+                 "Relat Frus (BANGS)" = mean_rf,
                  "Auto Sat (BPNSFS)*" = mean_as_bpnsfs, 
                  "Auto Frus (BPNSFS)*" = mean_af_bpnsfs, 
                  "Comp Sat (BPNSFS)*" = mean_cs_bpnsfs, 
@@ -502,3 +511,34 @@ modPlaytime <- glmmTMB::glmmTMB(playtimePrev2Weeks ~ mean_as_cw + mean_af_cw + m
 
 summary(modPlaytime)
 r.squaredGLMM(modPlaytime)
+
+
+
+# ~~~~~~~~~~~~~~~~~~~~~~~~~
+# Exploratory stuff #####
+# ~~~~~~~~~~~~~~~~~~~~~~~~~
+
+## Xbox data - Wave 1 only
+
+cfa2b <- cfa(bangqMod, dfGEN %>% filter(wave == 1), estimator = "MLM")
+summary(cfa2b, fit.measures = TRUE, standardized = TRUE)
+fitMeasures(cfa2b,c("cfi.robust","tli.robust","rmsea.ci.lower.robust","rmsea.robust","rmsea.ci.upper.robust","srmr"))
+
+MBESS::ci.reliability(dfGEN %>% filter(wave == 1) %>% select(bang_1:bang_3), B = 1000)
+MBESS::ci.reliability(dfGEN %>% filter(wave == 1) %>% select(bang_4:bang_6), B = 1000)
+MBESS::ci.reliability(dfGEN %>% filter(wave == 1) %>% select(bang_7:bang_9), B = 1000)
+MBESS::ci.reliability(dfGEN %>% filter(wave == 1) %>% select(bang_10:bang_12), B = 1000)
+MBESS::ci.reliability(dfGEN %>% filter(wave == 1) %>% select(bang_13:bang_15), B = 1000)
+MBESS::ci.reliability(dfGEN %>% filter(wave == 1) %>% select(bang_16:bang_18), B = 1000)
+reliability(cfa2)
+
+## Hierarchical 
+
+fit_configural <- cfa(bangqModHierarchical, df, group = "study", estimator = "MLM")
+fit_metric <- cfa(bangqModHierarchical, df, group = "study", estimator = "MLM", group.equal = c("loadings"))
+fit_scalar <- cfa(bangqModHierarchical, df, group = "study", estimator = "MLM", group.equal = c("loadings", "intercepts"))
+
+summary(fit_metric, fit.measures = TRUE, standardized = TRUE)
+
+MBESS::ci.reliability(df %>% select(bang_1:bang_3, bang_7:bang_9, bang_13:bang_15), B = 1000)
+MBESS::ci.reliability(df %>% select(bang_4:bang_6, bang_10:bang_12, bang_16:bang_18), B = 1000)
